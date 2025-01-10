@@ -28,10 +28,11 @@ class AgentCreateView(OrganisorAndLoginRequiredMixin, generic.CreateView):
     
     def form_valid(self, form):
         # TODO send email
+        password = f"{random.randint(0, 1000000)}"
         user = form.save(commit=False)
         user.is_agent = True
         user.is_organisor = False
-        user.set_password(f"{random.randint(0, 1000000)}")
+        user.set_password(password)
         user.save()
         Agent.objects.create(
             user=user,
@@ -39,7 +40,7 @@ class AgentCreateView(OrganisorAndLoginRequiredMixin, generic.CreateView):
         )
         send_mail(
             subject="You are invited to be an agent",
-            message="You were added as an agent on DJCRM. Please come login to start working.",
+            message=f"You were added as an agent on DJCRM. Please come login with password {password} to start working.",
             from_email="admin@test.com",
             recipient_list=[user.email]
         )

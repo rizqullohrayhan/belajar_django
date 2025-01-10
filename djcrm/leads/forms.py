@@ -1,4 +1,5 @@
 from django import forms
+from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, UsernameField
 
@@ -19,7 +20,17 @@ class LeadModelForm(forms.ModelForm):
             'description',
             'phone_number',
             'email',
+            'profile_picture',
         ]
+
+    def clean_profile_picture(self):
+        image = self.cleaned_data['profile_picture']
+
+        if image:
+            # Periksa ukuran file (dalam byte)
+            if image.size > 200 * 1024:  # 200 KB
+                raise ValidationError("Ukuran gambar tidak boleh lebih dari 200 KB.")
+        return image
 
 
 class LeadForm(forms.Form):
